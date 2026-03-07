@@ -36,38 +36,38 @@ function TreeNode({
         onClick={() => onSelect(node.id)}
         className={`w-full text-left rounded-lg px-3 py-2 mb-1 transition-all flex items-start gap-2 ${
           isActive
-            ? "bg-indigo-600/30 border border-indigo-500/50"
-            : "hover:bg-gray-800 border border-transparent"
+            ? "glass-panel bg-indigo-500/20 border-indigo-500/50"
+            : "hover:bg-gray-800/50 border border-transparent"
         }`}
         style={{ marginLeft: depth * 16 }}
       >
         <div className="flex flex-col min-w-0 flex-1">
           <div className="flex items-center gap-2">
             <div
-              className={`w-2 h-2 rounded-full flex-shrink-0 ${
-                isActive ? "bg-indigo-400 animate-pulse" : "bg-gray-500"
+              className={`w-1.5 h-1.5 rounded-full flex-shrink-0 ${
+                isActive ? "bg-indigo-400 shadow-[0_0_8px_#818cf8] animate-pulse" : "bg-gray-600"
               }`}
             />
             <span
-              className={`text-xs font-semibold ${
-                isActive ? "text-indigo-300" : "text-gray-300"
+              className={`text-[11px] font-bold uppercase tracking-wider ${
+                isActive ? "text-indigo-300" : "text-gray-400"
               }`}
             >
               Timeline {node.id}
             </span>
           </div>
           {!isRoot && (
-            <div className="ml-4 mt-0.5">
-              <div className="text-xs text-gray-500 truncate max-w-[140px]">
+            <div className="ml-3.5 mt-0.5 leading-tight">
+              <div className="text-[10px] text-gray-500 italic truncate max-w-[140px]">
                 "{node.dominantIdea}"
               </div>
-              <div className="text-xs text-gray-600">
-                tick {node.forkedAtTick}
+              <div className="text-[9px] text-gray-600 font-mono">
+                FORKED @ T{node.forkedAtTick}
               </div>
             </div>
           )}
           {isRoot && (
-            <div className="ml-4 mt-0.5 text-xs text-gray-500">
+            <div className="ml-3.5 mt-0.5 text-[10px] text-gray-600 uppercase tracking-tighter">
               Origin Universe
             </div>
           )}

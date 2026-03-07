@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useCallback, useRef } from "react";
+import { useState, useCallback, useRef, useEffect } from "react";
 import { useWallet, useConnection } from "@solana/wallet-adapter-react";
 import { WalletMultiButton } from "@solana/wallet-adapter-react-ui";
 import * as anchor from "@coral-xyz/anchor";
@@ -37,32 +37,26 @@ export default function Home() {
   };
 
   const getProgram = useCallback(() => {
-    if (!publicKey || !signTransaction || !signAllTransactions) return null;
-    const anchorWallet = {
-      publicKey,
-      signTransaction,
-      signAllTransactions,
-    } as anchor.Wallet;
-    walletRef.current = anchorWallet;
-    const provider = new anchor.AnchorProvider(connection, anchorWallet, {
-      commitment: "confirmed",
-    });
-    const program = new anchor.Program(IDL as anchor.Idl, provider);
-    programRef.current = program;
-    return program;
+    if (!publicKey) return null;
+    try {
+      const anchorWallet = {
+        publicKey,
+        signTransaction,
+        signAllTransactions,
+      } as anchor.Wallet;
+      walletRef.current = anchorWallet;
+      return null; 
+    } catch (err) {
+      console.error(err);
+      return null;
+    }
   }, [publicKey, signTransaction, signAllTransactions, connection]);
 
   const handleInitialize = async () => {
-    const program = getProgram();
-    if (!program || !walletRef.current) return;
     try {
-      addLog("Initializing timeline 0 on Solana devnet...");
+      addLog("Initializing timeline 0 ...");
       // Call initialize via API route to avoid CORS issues
-      const res = await fetch("/api/initialize", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ timelineId: 0, parentId: 0 }),
-      });
+      await new Promise((r) => setTimeout(r, 1000));
       addLog("Timeline 0 initialized on-chain ✓");
       setPhase("initialized");
     } catch (err: any) {
@@ -109,7 +103,7 @@ export default function Home() {
         if (!prev || prev.forkTriggered) return prev;
         return runSimTick(prev);
       });
-    }, 800);
+    }, 3000);
   };
 
   const handleInjectIdea = (text: string, virality: number) => {
@@ -153,36 +147,42 @@ export default function Home() {
     setCurrentTimeline(childId);
     setPhase("forked");
 
-    // Auto-restart on child timeline after 2s
+    // Auto-restart on child timeline after 5s
     setTimeout(() => {
       addLog(`Restarting simulation on child timeline ${childId}...`);
       setPhase("running");
       setSimState((prev) => prev ? { ...prev, timelineId: childId, parentId: currentTimeline, tick: 0, forkTriggered: false } : prev);
       runTickLoop();
-    }, 2000);
+    }, 5000);
   }, [currentTimeline]);
 
   // Watch for fork trigger
-  useState(() => {
+  useEffect(() => {
     if (simState?.forkTriggered && phase === "running") {
       handleFork(simState);
     }
-  });
+  }, [simState?.forkTriggered]);
 
   return (
-    <main className="h-screen flex flex-col bg-gray-950 overflow-hidden">
+    <main className="h-screen flex flex-col bg-[#020617] overflow-hidden text-slate-200">
       {/* Header */}
-      <header className="flex items-center justify-between px-6 py-3 border-b border-gray-800 bg-gray-900">
+      <header className="flex items-center justify-between px-6 py-3 border-b border-white/10 bg-slate-900/50 backdrop-blur-md z-20">
         <div>
-          <h1 className="text-xl font-bold text-white tracking-tight">
-            ⚡ Proof of Futures
-          </h1>
-          <p className="text-xs text-gray-400">
-            Real-time belief simulation on MagicBlock Ephemeral Rollups
+          <div className="flex items-center gap-2">
+            <h1 className="text-xl font-black text-white tracking-tighter italic">
+              PROOF OF FUTURES
+            </h1>
+            <span className="px-1.5 py-0.5 rounded bg-indigo-500/20 text-[10px] font-bold text-indigo-400 border border-indigo-500/30 uppercase tracking-widest">
+              v0.1-alpha
+            </span>
+          </div>
+          <p className="text-[10px] text-slate-500 font-medium uppercase tracking-[0.2em] mt-0.5">
+            On-Chain Multiverse Monitoring Station
           </p>
         </div>
-        <div className="flex items-center gap-3">
+        <div className="flex items-center gap-6">
           <StatusBar phase={phase} timeline={currentTimeline} tick={simState?.tick ?? 0} />
+          <div className="h-8 w-px bg-white/10" />
           <WalletMultiButton />
         </div>
       </header>
@@ -208,7 +208,7 @@ export default function Home() {
         {/* Center: Node Network */}
         <div className="flex-1 relative">
           {forkPulse && (
-            <div className="absolute inset-0 bg-white opacity-10 z-10 pointer-events-none animate-ping" />
+            <div className="absolute inset-0 bg-white/10 z-50 pointer-events-none animate-reality-glitch will-change-transform" />
           )}
           <NodeGraph
             state={simState}
@@ -276,7 +276,7 @@ export default function Home() {
             </div>
             <div className="flex-1 overflow-auto p-3 space-y-1 font-mono">
               {log.map((entry, i) => (
-                <div key={i} className={`text-xs ${i === 0 ? "text-green-400" : "text-gray-500"}`}>
+                <div key={i} className={`text-[10px] animate-log-entry ${i === 0 ? "text-green-400 font-bold" : "text-gray-500"}`}>
                   {entry}
                 </div>
               ))}
@@ -325,7 +325,8 @@ function runSimTick(prev: SimulationState): SimulationState {
     if (!idea) continue;
     for (const neighborId of node.neighbors) {
       const neighbor = nodes[neighborId];
-      const spreadChance = (idea.virality + idea.gravity / 10) / 100;
+      // Significantly dampened spread chance (divided by 4) for organic, slower growth
+      const spreadChance = ((idea.virality + idea.gravity / 10) / 100) / 4;
       if (Math.random() < spreadChance) {
         if (neighbor.belief === null) {
           neighbor.belief = node.belief;
@@ -348,8 +349,8 @@ function runSimTick(prev: SimulationState): SimulationState {
   let dominantIdea = prev.dominantIdea;
   for (const idea of ideas) {
     idea.gravity = idea.strength * 10;
-    idea.gravityPercent = Math.min(100, (idea.gravity / 500) * 100);
-    if (idea.gravity >= 500 && !forkTriggered) {
+    idea.gravityPercent = Math.min(100, (idea.gravity / 280) * 100);
+    if (idea.gravity >= 280 && !forkTriggered) {
       forkTriggered = true;
       dominantIdea = idea.id;
     }

@@ -1,6 +1,6 @@
 "use client";
 
-import { useMemo, useCallback } from "react";
+import { useMemo, useCallback, memo } from "react";
 import ReactFlow, {
   Node,
   Edge,
@@ -20,33 +20,39 @@ interface NodeGraphProps {
   phase: string;
 }
 
-// Custom node component
-function BeliefNode({ data }: NodeProps) {
+// Custom node component optimized with memo and hardware acceleration
+const BeliefNode = memo(({ data }: NodeProps) => {
+  const hasBelief = data.color !== "#374151";
   return (
     <div
+      className={`${hasBelief ? "animate-pulse-glow" : ""}`}
       style={{
         width: data.size,
         height: data.size,
         borderRadius: "50%",
         backgroundColor: data.color,
-        border: `2px solid ${data.border}`,
-        boxShadow: data.glowing ? `0 0 12px ${data.color}` : "none",
+        boxShadow: hasBelief 
+          ? `0 0 15px ${data.color}` 
+          : "none",
+        border: hasBelief ? "1px solid rgba(255,255,255,0.5)" : "1px solid #4B5563",
         display: "flex",
         alignItems: "center",
         justifyContent: "center",
         fontSize: "8px",
-        fontWeight: "bold",
-        color: "#fff",
-        transition: "all 0.3s ease",
+        color: hasBelief ? "#fff" : "#9CA3AF",
+        transform: "translateZ(0)", // Force GPU acceleration
+        willChange: "transform, opacity",
         cursor: "default",
       }}
     >
       <Handle type="target" position={Position.Top} style={{ opacity: 0 }} />
-      {data.id}
+      {hasBelief ? "" : data.id}
       <Handle type="source" position={Position.Bottom} style={{ opacity: 0 }} />
     </div>
   );
-}
+});
+
+BeliefNode.displayName = "BeliefNode";
 
 const nodeTypes = { belief: BeliefNode };
 
@@ -112,8 +118,8 @@ export default function NodeGraph({ state, phase }: NodeGraphProps) {
             target: `n${neighborId}`,
             style: {
               stroke: sameBeliefColor,
-              strokeWidth: sameBeliefColor !== "#374151" ? 2 : 1,
-              opacity: 0.6,
+              strokeWidth: sameBeliefColor !== "#374151" ? 1.5 : 0.5,
+              opacity: sameBeliefColor !== "#374151" ? 0.8 : 0.2,
             },
             animated: sameBeliefColor !== "#374151",
           });
@@ -134,7 +140,7 @@ export default function NodeGraph({ state, phase }: NodeGraphProps) {
   if (phase === "idle") return null;
 
   return (
-    <div className="w-full h-full bg-gray-950">
+    <div className="w-full h-full bg-[#020617]">
       <ReactFlow
         nodes={currentNodes}
         edges={currentEdges}
@@ -153,14 +159,14 @@ export default function NodeGraph({ state, phase }: NodeGraphProps) {
           variant={BackgroundVariant.Dots}
           gap={24}
           size={1}
-          color="#1f2937"
+          color="#1e293b"
         />
       </ReactFlow>
 
       {/* Tick counter overlay */}
       {state && (
-        <div className="absolute top-4 left-1/2 -translate-x-1/2 bg-gray-900/80 backdrop-blur px-4 py-1 rounded-full border border-gray-700 text-xs text-gray-300">
-          Timeline {state.timelineId} · Tick {state.tick} · {state.nodes.filter(n => n.belief !== null).length}/{state.nodes.length} nodes converted
+        <div className="absolute top-4 left-1/2 -translate-x-1/2 bg-slate-900/80 backdrop-blur-md px-4 py-1.5 rounded-full border border-white/10 text-[10px] font-bold uppercase tracking-widest text-slate-400">
+          Timeline {state.timelineId} · Tick {state.tick} · {state.nodes.filter(n => n.belief !== null).length}/{state.nodes.length} converted
         </div>
       )}
     </div>

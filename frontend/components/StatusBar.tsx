@@ -12,7 +12,7 @@ const phaseConfig: Record<Phase, { label: string; color: string; dot: string }> 
   idle: { label: "Idle", color: "text-gray-400", dot: "bg-gray-500" },
   initialized: { label: "On-Chain", color: "text-blue-400", dot: "bg-blue-400" },
   delegated: { label: "ER Ready", color: "text-purple-400", dot: "bg-purple-400" },
-  running: { label: "Live on ER", color: "text-green-400", dot: "bg-green-400 animate-pulse" },
+  running: { label: "Live on ER", color: "text-green-400", dot: "bg-green-400 animate-heartbeat" },
   forked: { label: "FORK ⚡", color: "text-yellow-400", dot: "bg-yellow-400 animate-ping" },
 };
 

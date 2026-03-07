@@ -22,10 +22,10 @@ export default function IdeaPanel({ ideas, phase, onInject }: IdeaPanelProps) {
   };
 
   const presets = [
-    { text: "AI replaces devs", virality: 45 },
-    { text: "Crypto fixes this", virality: 55 },
-    { text: "Web3 is dead", virality: 35 },
-    { text: "Simulation theory", virality: 40 },
+    { text: "AI replaces devs", virality: 25 },
+    { text: "Crypto fixes this", virality: 30 },
+    { text: "Web3 is dead", virality: 20 },
+    { text: "Simulation theory", virality: 22 },
   ];
 
   return (
@@ -101,50 +101,61 @@ export default function IdeaPanel({ ideas, phase, onInject }: IdeaPanelProps) {
           </p>
         )}
 
-        <div className="space-y-3">
-          {ideas.map((idea) => (
-            <div key={idea.id} className="space-y-1">
-              <div className="flex items-center justify-between">
-                <div className="flex items-center gap-2 min-w-0">
-                  <div
-                    className="w-2.5 h-2.5 rounded-full flex-shrink-0"
-                    style={{ backgroundColor: idea.color }}
-                  />
-                  <span className="text-xs text-white truncate max-w-[140px]">
-                    {idea.text}
+        <div className="space-y-4">
+          {ideas.map((idea) => {
+            const isCritical = idea.gravityPercent > 80;
+            return (
+              <div 
+                key={idea.id} 
+                className={`space-y-1 p-2 rounded-lg transition-all duration-300 ${
+                  isCritical ? "bg-red-950/20 border border-red-500/20 animate-vibrate" : "bg-transparent border border-transparent"
+                }`}
+              >
+                <div className="flex items-center justify-between">
+                  <div className="flex items-center gap-2 min-w-0">
+                    <div
+                      className="w-2.5 h-2.5 rounded-full flex-shrink-0"
+                      style={{ 
+                        backgroundColor: idea.color,
+                        boxShadow: `0 0 10px ${idea.color}`
+                      }}
+                    />
+                    <span className="text-xs font-medium text-white truncate max-w-[140px]">
+                      {idea.text}
+                    </span>
+                  </div>
+                  <span className="text-[10px] text-gray-500 flex-shrink-0 ml-1">
+                    {idea.strength} nodes
                   </span>
                 </div>
-                <span className="text-xs text-gray-500 flex-shrink-0 ml-1">
-                  {idea.strength} nodes
-                </span>
-              </div>
 
-              {/* Gravity bar */}
-              <div className="relative h-1.5 bg-gray-800 rounded-full overflow-hidden">
-                <div
-                  className="absolute left-0 top-0 h-full rounded-full transition-all duration-500"
-                  style={{
-                    width: `${idea.gravityPercent}%`,
-                    backgroundColor: idea.color,
-                    boxShadow: idea.gravityPercent > 80 ? `0 0 6px ${idea.color}` : "none",
-                  }}
-                />
-              </div>
+                {/* Gravity bar */}
+                <div className="relative h-1.5 bg-gray-800/50 rounded-full overflow-hidden border border-gray-700/30">
+                  <div
+                    className="absolute left-0 top-0 h-full rounded-full transition-all duration-500 ease-out"
+                    style={{
+                      width: `${idea.gravityPercent}%`,
+                      backgroundColor: idea.color,
+                      boxShadow: isCritical ? `0 0 12px ${idea.color}` : `0 0 4px ${idea.color}`,
+                    }}
+                  />
+                </div>
 
-              <div className="flex justify-between text-xs text-gray-600">
-                <span>gravity {idea.gravity}</span>
-                <span
-                  className={
-                    idea.gravityPercent > 80 ? "text-yellow-400 animate-pulse" : ""
-                  }
-                >
-                  {idea.gravityPercent > 80
-                    ? "⚡ fork imminent"
-                    : `${idea.gravityPercent.toFixed(0)}% to fork`}
-                </span>
+                <div className="flex justify-between text-[10px] uppercase tracking-tighter">
+                  <span style={{ color: idea.color }}>gravity {idea.gravity}</span>
+                  <span
+                    className={
+                      isCritical ? "text-yellow-400 font-bold animate-pulse" : "text-gray-500"
+                    }
+                  >
+                    {isCritical
+                      ? "⚡ fork threshold near"
+                      : `${idea.gravityPercent.toFixed(0)}% to fork`}
+                  </span>
+                </div>
               </div>
-            </div>
-          ))}
+            );
+          })}
         </div>
       </div>
     </div>
