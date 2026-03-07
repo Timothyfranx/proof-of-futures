@@ -8,7 +8,7 @@ export const ER_DEVNET_RPC = "https://devnet-us.magicblock.app";
 
 // ── Program IDs ────────────────────────────────────────────────────────────
 export const PROGRAM_ID = new PublicKey(
-  "ProFut11111111111111111111111111111111111111"
+  "8Ss1Paq4ymdrMaEBQmrHGKhFrq323aQegNVqSbcWzSia"
 );
 
 // MagicBlock delegation program (devnet)

@@ -1,12 +1,12 @@
 [toolchain]
-anchor_version = "0.30.1"
+anchor_version = "0.32.1"
 
 [features]
 seeds = true
 skip-lint = false
 
 [programs.devnet]
-proof_of_futures = "ProFut11111111111111111111111111111111111111"
+proof_of_futures = "8Ss1Paq4ymdrMaEBQmrHGKhFrq323aQegNVqSbcWzSia"
 
 [registry]
 url = "https://api.apr.dev"

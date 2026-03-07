@@ -16,8 +16,8 @@ cpi = ["no-entrypoint"]
 default = []
 # Required for MagicBlock ER delegation
 ephemeral = []
+idl-build = ["anchor-lang/idl-build"]
 
 [dependencies]
-anchor-lang = { version = "0.30.1", features = ["init-if-needed"] }
-# MagicBlock delegation program CPI
-ephemeral-rollups-sdk = { version = "0.4.3", features = ["cpi"] }
+anchor-lang = { version = "0.32.1", features = ["init-if-needed"] }
+ephemeral-rollups-sdk = { version = "0.6.5", features = ["anchor"] }

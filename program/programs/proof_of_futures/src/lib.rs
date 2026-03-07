@@ -1,6 +1,6 @@
 use anchor_lang::prelude::*;
 
-declare_id!("ProFut11111111111111111111111111111111111111");
+declare_id!("8Ss1Paq4ymdrMaEBQmrHGKhFrq323aQegNVqSbcWzSia");
 
 pub const MAX_NODES: usize = 64;
 pub const MAX_IDEAS: usize = 8;
@@ -146,17 +146,11 @@ pub mod proof_of_futures {
         }
 
         // Check fork threshold
-        for idea in &state.ideas {
-            if idea.gravity >= FORK_THRESHOLD {
-                state.fork_triggered = true;
-                state.dominant_idea = idea.id;
-                msg!(
-                    "FORK TRIGGERED: idea '{}' reached gravity {}",
-                    idea.text,
-                    idea.gravity
-                );
-                break;
-            }
+        let fork_idea = state.ideas.iter().find(|idea| idea.gravity >= FORK_THRESHOLD).map(|idea| (idea.id, idea.text.clone(), idea.gravity));
+        if let Some((idea_id, idea_text, idea_gravity)) = fork_idea {
+            state.fork_triggered = true;
+            state.dominant_idea = idea_id;
+            msg!("FORK TRIGGERED: idea '{}' reached gravity {}", idea_text, idea_gravity);
         }
 
         Ok(())
