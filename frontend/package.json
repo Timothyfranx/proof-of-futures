@@ -1,0 +1,33 @@
+{
+  "name": "proof-of-futures-frontend",
+  "version": "0.1.0",
+  "private": true,
+  "scripts": {
+    "dev": "next dev",
+    "build": "next build",
+    "start": "next start",
+    "lint": "next lint"
+  },
+  "dependencies": {
+    "@coral-xyz/anchor": "^0.30.1",
+    "@magicblock-labs/ephemeral-rollups-sdk": "^0.4.3",
+    "@solana/wallet-adapter-base": "^0.9.23",
+    "@solana/wallet-adapter-phantom": "^0.9.24",
+    "@solana/wallet-adapter-react": "^0.15.35",
+    "@solana/wallet-adapter-react-ui": "^0.9.35",
+    "@solana/web3.js": "^1.95.3",
+    "next": "14.2.5",
+    "react": "^18",
+    "react-dom": "^18",
+    "reactflow": "^11.11.4",
+    "tailwindcss": "^3.4.1",
+    "typescript": "^5"
+  },
+  "devDependencies": {
+    "@types/node": "^20",
+    "@types/react": "^18",
+    "@types/react-dom": "^18",
+    "autoprefixer": "^10.0.1",
+    "postcss": "^8"
+  }
+}
