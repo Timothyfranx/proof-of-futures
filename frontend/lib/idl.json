@@ -1,0 +1,132 @@
+{
+  "version": "0.1.0",
+  "name": "proof_of_futures",
+  "instructions": [
+    {
+      "name": "initializeTimeline",
+      "accounts": [
+        { "name": "simulationState", "isMut": true, "isSigner": false },
+        { "name": "payer", "isMut": true, "isSigner": true },
+        { "name": "systemProgram", "isMut": false, "isSigner": false }
+      ],
+      "args": [
+        { "name": "timelineId", "type": "u64" },
+        { "name": "parentId", "type": "u64" }
+      ]
+    },
+    {
+      "name": "injectIdea",
+      "accounts": [
+        { "name": "simulationState", "isMut": true, "isSigner": false },
+        { "name": "authority", "isMut": false, "isSigner": true }
+      ],
+      "args": [
+        { "name": "text", "type": "string" },
+        { "name": "virality", "type": "u8" },
+        { "name": "seedNode", "type": "u8" }
+      ]
+    },
+    {
+      "name": "tick",
+      "accounts": [
+        { "name": "simulationState", "isMut": true, "isSigner": false },
+        { "name": "authority", "isMut": false, "isSigner": true }
+      ],
+      "args": [
+        { "name": "randomSeed", "type": "u64" }
+      ]
+    },
+    {
+      "name": "recordFork",
+      "accounts": [
+        { "name": "forkRecord", "isMut": true, "isSigner": false },
+        { "name": "simulationState", "isMut": false, "isSigner": false },
+        { "name": "payer", "isMut": true, "isSigner": true },
+        { "name": "systemProgram", "isMut": false, "isSigner": false }
+      ],
+      "args": [
+        { "name": "childTimelineId", "type": "u64" },
+        { "name": "dominantIdeaText", "type": "string" }
+      ]
+    }
+  ],
+  "accounts": [
+    {
+      "name": "SimulationState",
+      "type": {
+        "kind": "struct",
+        "fields": [
+          { "name": "timelineId", "type": "u64" },
+          { "name": "parentId", "type": "u64" },
+          { "name": "tick", "type": "u64" },
+          { "name": "forkTriggered", "type": "bool" },
+          { "name": "dominantIdea", "type": "u8" },
+          {
+            "name": "nodes",
+            "type": {
+              "vec": {
+                "defined": "NodeData"
+              }
+            }
+          },
+          {
+            "name": "ideas",
+            "type": {
+              "vec": {
+                "defined": "IdeaData"
+              }
+            }
+          }
+        ]
+      }
+    },
+    {
+      "name": "ForkRecord",
+      "type": {
+        "kind": "struct",
+        "fields": [
+          { "name": "parentTimelineId", "type": "u64" },
+          { "name": "childTimelineId", "type": "u64" },
+          { "name": "dominantIdea", "type": "string" },
+          { "name": "forkedAtTick", "type": "u64" },
+          { "name": "timestamp", "type": "i64" }
+        ]
+      }
+    }
+  ],
+  "types": [
+    {
+      "name": "NodeData",
+      "type": {
+        "kind": "struct",
+        "fields": [
+          { "name": "id", "type": "u8" },
+          { "name": "belief", "type": { "option": "u8" } },
+          { "name": "neighbors", "type": { "vec": "u8" } },
+          { "name": "gravity", "type": "u32" }
+        ]
+      }
+    },
+    {
+      "name": "IdeaData",
+      "type": {
+        "kind": "struct",
+        "fields": [
+          { "name": "id", "type": "u8" },
+          { "name": "text", "type": "string" },
+          { "name": "strength", "type": "u32" },
+          { "name": "virality", "type": "u8" },
+          { "name": "gravity", "type": "u32" }
+        ]
+      }
+    }
+  ],
+  "errors": [
+    { "code": 6000, "name": "TooManyIdeas", "msg": "Maximum number of ideas reached" },
+    { "code": 6001, "name": "InvalidNode", "msg": "Invalid node ID" },
+    { "code": 6002, "name": "InvalidVirality", "msg": "Virality must be 0-100" }
+  ],
+  "metadata": {
+    "address": "11111111111111111111111111111111111111"
+  }
+}

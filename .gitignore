@@ -15,6 +15,7 @@ dist/
 !package.json
 !tsconfig.json
 !Anchor.toml
+!idl.json
 
 # Env
 .env
