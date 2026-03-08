@@ -29,11 +29,11 @@ export default function IdeaPanel({ ideas, phase, onInject }: IdeaPanelProps) {
   ];
 
   return (
-    <div className="flex flex-col">
-      {/* Inject form */}
-      <div className="px-4 py-3 border-b border-gray-800">
-        <h2 className="text-sm font-semibold text-gray-300 uppercase tracking-wider mb-3">
-          Inject Idea
+    <div className="flex flex-col h-full overflow-hidden bg-slate-900/30">
+      {/* Inject form - Fixed at top */}
+      <div className="flex-shrink-0 px-4 py-4 border-b border-white/5 bg-slate-900/50 backdrop-blur-sm">
+        <h2 className="text-[10px] font-black text-slate-500 uppercase tracking-[0.2em] mb-4">
+          Station // Inject Idea
         </h2>
 
         <input
@@ -43,13 +43,13 @@ export default function IdeaPanel({ ideas, phase, onInject }: IdeaPanelProps) {
           onKeyDown={(e) => e.key === "Enter" && handleSubmit()}
           placeholder="Enter a belief..."
           disabled={!canInject}
-          className="w-full bg-gray-800 border border-gray-700 rounded-lg px-3 py-2 text-sm text-white placeholder-gray-500 focus:outline-none focus:border-indigo-500 disabled:opacity-40"
+          className="w-full bg-slate-950 border border-white/10 rounded-lg px-3 py-2 text-sm text-white placeholder-slate-600 focus:outline-none focus:border-indigo-500/50 transition-all disabled:opacity-40"
         />
 
-        <div className="mt-2">
-          <div className="flex justify-between text-xs text-gray-400 mb-1">
+        <div className="mt-4">
+          <div className="flex justify-between text-[10px] font-bold text-slate-500 uppercase tracking-widest mb-2">
             <span>Virality</span>
-            <span>{virality}%</span>
+            <span className="text-indigo-400">{virality}%</span>
           </div>
           <input
             type="range"
@@ -58,20 +58,20 @@ export default function IdeaPanel({ ideas, phase, onInject }: IdeaPanelProps) {
             value={virality}
             onChange={(e) => setVirality(Number(e.target.value))}
             disabled={!canInject}
-            className="w-full accent-indigo-500 disabled:opacity-40"
+            className="w-full h-1 bg-slate-800 rounded-lg appearance-none cursor-pointer accent-indigo-500 disabled:opacity-40"
           />
         </div>
 
         <button
           onClick={handleSubmit}
           disabled={!canInject || !ideaText.trim()}
-          className="w-full mt-2 px-4 py-2 bg-indigo-600 hover:bg-indigo-500 disabled:opacity-30 disabled:cursor-not-allowed rounded-lg text-sm font-semibold transition-colors"
+          className="w-full mt-4 px-4 py-2.5 bg-indigo-600 hover:bg-indigo-500 disabled:opacity-20 disabled:cursor-not-allowed rounded-lg text-[11px] font-bold uppercase tracking-widest transition-all shadow-lg shadow-indigo-500/20 active:scale-95"
         >
           Inject into Network
         </button>
 
         {/* Presets */}
-        <div className="mt-2 grid grid-cols-2 gap-1">
+        <div className="mt-3 grid grid-cols-2 gap-1.5">
           {presets.map((p) => (
             <button
               key={p.text}
@@ -80,7 +80,7 @@ export default function IdeaPanel({ ideas, phase, onInject }: IdeaPanelProps) {
                 setVirality(p.virality);
               }}
               disabled={!canInject}
-              className="px-2 py-1 text-xs bg-gray-800 hover:bg-gray-700 border border-gray-700 rounded text-gray-400 hover:text-white transition-colors disabled:opacity-30 truncate"
+              className="px-2 py-1.5 text-[9px] font-bold uppercase tracking-tight bg-slate-800/50 hover:bg-slate-700/50 border border-white/5 rounded text-slate-400 hover:text-white transition-all disabled:opacity-30 truncate"
             >
               {p.text}
             </button>
@@ -88,17 +88,19 @@ export default function IdeaPanel({ ideas, phase, onInject }: IdeaPanelProps) {
         </div>
       </div>
 
-      {/* Active ideas + gravity meters */}
-      <div className="px-4 py-3">
-        <h3 className="text-xs font-semibold text-gray-400 uppercase tracking-wider mb-3">
-          Active Ideas ({ideas.length}/8)
+      {/* Active ideas + gravity meters - Scrollable section */}
+      <div className="flex-1 overflow-y-auto p-4 space-y-4">
+        <h3 className="text-[10px] font-black text-slate-500 uppercase tracking-[0.2em] mb-4">
+          Active Beliefs ({ideas.length}/8)
         </h3>
 
         {ideas.length === 0 && (
-          <p className="text-xs text-gray-600 text-center py-4">
-            No ideas injected yet.
-            {phase === "running" && " Inject one above to start!"}
-          </p>
+          <div className="flex flex-col items-center justify-center py-12 text-center space-y-2 opacity-40">
+            <div className="text-2xl">🧠</div>
+            <p className="text-[10px] font-bold uppercase tracking-tighter text-slate-500">
+              No ideas detected in the current timeline.
+            </p>
+          </div>
         )}
 
         <div className="space-y-4">
@@ -107,50 +109,52 @@ export default function IdeaPanel({ ideas, phase, onInject }: IdeaPanelProps) {
             return (
               <div 
                 key={idea.id} 
-                className={`space-y-1 p-2 rounded-lg transition-all duration-300 ${
-                  isCritical ? "bg-red-950/20 border border-red-500/20 animate-vibrate" : "bg-transparent border border-transparent"
+                className={`space-y-2 p-3 rounded-xl transition-all duration-300 ${
+                  isCritical 
+                    ? "bg-red-500/10 border border-red-500/30 animate-vibrate shadow-lg shadow-red-500/5" 
+                    : "bg-slate-950/50 border border-white/5"
                 }`}
               >
                 <div className="flex items-center justify-between">
                   <div className="flex items-center gap-2 min-w-0">
                     <div
-                      className="w-2.5 h-2.5 rounded-full flex-shrink-0"
+                      className="w-2 h-2 rounded-full flex-shrink-0"
                       style={{ 
                         backgroundColor: idea.color,
-                        boxShadow: `0 0 10px ${idea.color}`
+                        boxShadow: `0 0 12px ${idea.color}`
                       }}
                     />
-                    <span className="text-xs font-medium text-white truncate max-w-[140px]">
+                    <span className="text-[11px] font-bold text-slate-200 truncate max-w-[140px] uppercase tracking-wide">
                       {idea.text}
                     </span>
                   </div>
-                  <span className="text-[10px] text-gray-500 flex-shrink-0 ml-1">
-                    {idea.strength} nodes
+                  <span className="text-[9px] font-black text-slate-500 flex-shrink-0 ml-1">
+                    {idea.strength} NODES
                   </span>
                 </div>
 
                 {/* Gravity bar */}
-                <div className="relative h-1.5 bg-gray-800/50 rounded-full overflow-hidden border border-gray-700/30">
+                <div className="relative h-1 bg-slate-800 rounded-full overflow-hidden">
                   <div
-                    className="absolute left-0 top-0 h-full rounded-full transition-all duration-500 ease-out"
+                    className="absolute left-0 top-0 h-full rounded-full transition-all duration-700 ease-out"
                     style={{
                       width: `${idea.gravityPercent}%`,
                       backgroundColor: idea.color,
-                      boxShadow: isCritical ? `0 0 12px ${idea.color}` : `0 0 4px ${idea.color}`,
+                      boxShadow: isCritical ? `0 0 15px ${idea.color}` : `0 0 5px ${idea.color}`,
                     }}
                   />
                 </div>
 
-                <div className="flex justify-between text-[10px] uppercase tracking-tighter">
-                  <span style={{ color: idea.color }}>gravity {idea.gravity}</span>
+                <div className="flex justify-between items-center text-[9px] font-black uppercase tracking-[0.1em]">
+                  <span style={{ color: idea.color }}>GRAVITY: {idea.gravity}</span>
                   <span
                     className={
-                      isCritical ? "text-yellow-400 font-bold animate-pulse" : "text-gray-500"
+                      isCritical ? "text-yellow-400 animate-pulse" : "text-slate-600"
                     }
                   >
                     {isCritical
-                      ? "⚡ fork threshold near"
-                      : `${idea.gravityPercent.toFixed(0)}% to fork`}
+                      ? "⚡ FORK IMMINENT"
+                      : `${idea.gravityPercent.toFixed(0)}% STRENGTH`}
                   </span>
                 </div>
               </div>
