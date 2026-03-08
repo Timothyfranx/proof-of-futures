@@ -147,9 +147,9 @@ export default function NodeGraph({ state, phase }: NodeGraphProps) {
         nodesDraggable={false}
         nodesConnectable={false}
         elementsSelectable={false}
-        zoomOnScroll={false}
-        panOnScroll={false}
-        panOnDrag={false}
+        zoomOnScroll={true}
+        panOnScroll={true}
+        panOnDrag={true}
         proOptions={{ hideAttribution: true }}
       >
         <Background
