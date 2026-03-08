@@ -149,13 +149,14 @@ export default function Home() {
       return addNodeToTree(prev, currentTimeline, newNode);
     });
 
-    setCurrentTimeline(childId);
-    setViewingTimeline(childId);
+    const nextTimelineId = childId;
+    setCurrentTimeline(nextTimelineId);
+    setViewingTimeline(nextTimelineId);
     setPhase("forked");
 
     // Auto-restart on child timeline after 5s
     setTimeout(() => {
-      addLog(`Restarting simulation on child timeline ${childId}...`);
+      addLog(`Restarting simulation on child timeline ${nextTimelineId}...`);
       setPhase("running");
       runTickLoop();
     }, 5000);

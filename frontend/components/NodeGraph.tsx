@@ -127,20 +127,27 @@ export default function NodeGraph({ state, phase }: NodeGraphProps) {
     return { rfNodes, rfEdges };
   }, [state]);
 
-  const [nodes, , onNodesChange] = useNodesState(rfNodes);
-  const [edges, , onEdgesChange] = useEdgesState(rfEdges);
+  const [nodes, setNodes, onNodesChange] = useNodesState(rfNodes);
+  const [edges, setEdges, onEdgesChange] = useEdgesState(rfEdges);
 
-  // Sync state changes
-  const currentNodes = rfNodes.length > 0 ? rfNodes : nodes;
-  const currentEdges = rfEdges.length > 0 ? rfEdges : edges;
+  // Sync state changes when simulation updates
+  useEffect(() => {
+    setNodes(rfNodes);
+  }, [rfNodes, setNodes]);
 
-  if (phase === "idle") return null;
+  useEffect(() => {
+    setEdges(rfEdges);
+  }, [rfEdges, setEdges]);
+
+  if (phase === "idle" && !state) return null;
 
   return (
     <div className="w-full h-full bg-[#020617]">
       <ReactFlow
-        nodes={currentNodes}
-        edges={currentEdges}
+        nodes={nodes}
+        edges={edges}
+        onNodesChange={onNodesChange}
+        onEdgesChange={onEdgesChange}
         nodeTypes={nodeTypes}
         fitView
         fitViewOptions={{ padding: 0.1 }}
