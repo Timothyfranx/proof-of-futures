@@ -6,7 +6,7 @@ seeds = true
 skip-lint = false
 
 [programs.devnet]
-proof_of_futures = "8Ss1Paq4ymdrMaEBQmrHGKhFrq323aQegNVqSbcWzSia"
+proof_of_futures = "J6CRBYD9b8vjZJsY61usKT986oAxxZMoGigzwkNHkdD4"
 
 [registry]
 url = "https://api.apr.dev"

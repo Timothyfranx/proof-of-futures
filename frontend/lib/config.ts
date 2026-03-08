@@ -1,6 +1,6 @@
 export const SOLANA_DEVNET_RPC = "https://api.devnet.solana.com";
 export const ER_DEVNET_RPC = "https://devnet-us.magicblock.app";
-export const PROGRAM_ID = "8Ss1Paq4ymdrMaEBQmrHGKhFrq323aQegNVqSbcWzSia";
+export const PROGRAM_ID = "J6CRBYD9b8vjZJsY61usKT986oAxxZMoGigzwkNHkdD4";
 export const FORK_THRESHOLD = 280;
 
 export const IDEA_COLORS = [
