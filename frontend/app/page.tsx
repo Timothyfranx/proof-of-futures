@@ -283,12 +283,14 @@ export default function Home() {
         </div>
 
         {/* Right: Idea Panel + Log */}
-        <div className="w-72 border-l border-gray-800 bg-gray-900 flex flex-col">
-          <IdeaPanel
-            ideas={activeSimState?.ideas ?? []}
-            phase={isViewingHistory ? "idle" : phase}
-            onInject={handleInjectIdea}
-          />
+        <div className="w-72 border-l border-gray-800 bg-gray-900 flex flex-col overflow-hidden">
+          <div className="flex-[2] overflow-hidden">
+            <IdeaPanel
+              ideas={activeSimState?.ideas ?? []}
+              phase={isViewingHistory ? "idle" : phase}
+              onInject={handleInjectIdea}
+            />
+          </div>
           {/* Log */}
           <div className="flex-1 overflow-hidden flex flex-col border-t border-gray-800">
             <div className="px-4 py-2 bg-gray-800">

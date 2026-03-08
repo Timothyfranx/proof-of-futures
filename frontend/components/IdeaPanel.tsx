@@ -29,7 +29,7 @@ export default function IdeaPanel({ ideas, phase, onInject }: IdeaPanelProps) {
   ];
 
   return (
-    <div className="flex flex-col h-full overflow-hidden bg-slate-900/30">
+    <div className="flex flex-col overflow-hidden bg-slate-900/30">
       {/* Inject form - Fixed at top */}
       <div className="flex-shrink-0 px-4 py-4 border-b border-white/5 bg-slate-900/50 backdrop-blur-sm">
         <h2 className="text-[10px] font-black text-slate-500 uppercase tracking-[0.2em] mb-4">
