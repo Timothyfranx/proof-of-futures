@@ -105,23 +105,20 @@ export default function NodeGraph({ state, phase }: NodeGraphProps) {
         const key = [Math.min(node.id, neighborId), Math.max(node.id, neighborId)].join("-");
         if (!edgeSet.has(key)) {
           edgeSet.add(key);
-          // Color edge if both nodes share a belief
-          const sameBeliefColor =
-            node.belief !== null &&
-            state.nodes[neighborId]?.belief === node.belief
-              ? node.color
-              : "#374151";
+          const isSameBelief = node.belief !== null && state.nodes[neighborId]?.belief === node.belief;
+          const sameBeliefColor = isSameBelief ? node.color : "#374151";
 
           rfEdges.push({
             id: `e${key}`,
             source: `n${node.id}`,
             target: `n${neighborId}`,
+            className: isSameBelief ? "animate-glow-line" : "",
             style: {
               stroke: sameBeliefColor,
-              strokeWidth: sameBeliefColor !== "#374151" ? 1.5 : 0.5,
-              opacity: sameBeliefColor !== "#374151" ? 0.8 : 0.2,
+              strokeWidth: isSameBelief ? 2.5 : 0.5,
+              opacity: isSameBelief ? 0.9 : 0.15,
             },
-            animated: sameBeliefColor !== "#374151",
+            animated: isSameBelief,
           });
         }
       }
@@ -165,8 +162,26 @@ export default function NodeGraph({ state, phase }: NodeGraphProps) {
 
       {/* Tick counter overlay */}
       {state && (
-        <div className="absolute top-4 left-1/2 -translate-x-1/2 bg-slate-900/80 backdrop-blur-md px-4 py-1.5 rounded-full border border-white/10 text-[10px] font-bold uppercase tracking-widest text-slate-400">
-          Timeline {state.timelineId} · Tick {state.tick} · {state.nodes.filter(n => n.belief !== null).length}/{state.nodes.length} converted
+        <div className="absolute top-6 left-1/2 -translate-x-1/2 flex flex-col items-center gap-2">
+          <div className="bg-slate-900/80 backdrop-blur-md px-4 py-1.5 rounded-full border border-white/10 text-[10px] font-bold uppercase tracking-widest text-slate-400">
+            Timeline {state.timelineId} · Tick {state.tick}
+          </div>
+          <div className="w-64 h-1.5 bg-slate-800/50 rounded-full overflow-hidden border border-white/5 flex">
+            {state.ideas.map(idea => (
+              <div 
+                key={idea.id}
+                style={{ 
+                  width: `${(idea.strength / state.nodes.length) * 100}%`,
+                  backgroundColor: idea.color,
+                  boxShadow: `0 0 10px ${idea.color}`
+                }}
+                className="h-full transition-all duration-1000"
+              />
+            ))}
+          </div>
+          <div className="text-[9px] font-black text-slate-500 uppercase tracking-widest">
+            Belief Saturation: {state.nodes.filter(n => n.belief !== null).length}/{state.nodes.length}
+          </div>
         </div>
       )}
     </div>

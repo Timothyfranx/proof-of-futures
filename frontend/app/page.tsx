@@ -20,6 +20,8 @@ export default function Home() {
 
   const [phase, setPhase] = useState<Phase>("idle");
   const [currentTimeline, setCurrentTimeline] = useState<number>(0);
+  const [viewingTimeline, setViewingTimeline] = useState<number>(0);
+  const [history, setHistory] = useState<Record<number, SimulationState>>({});
   const [simState, setSimState] = useState<SimulationState | null>(null);
   const [timelineTree, setTimelineTree] = useState<TimelineNode[]>([
     { id: 0, parentId: null, dominantIdea: "Origin", forkedAtTick: 0, children: [] },
@@ -88,8 +90,8 @@ export default function Home() {
 
     // Start with initial state
     const initState: SimulationState = {
-      timelineId: 0,
-      parentId: 0,
+      timelineId: currentTimeline,
+      parentId: currentTimeline > 0 ? currentTimeline - 1 : 0,
       tick: 0,
       forkTriggered: false,
       dominantIdea: 255,
@@ -127,6 +129,9 @@ export default function Home() {
     const dominantIdea = state.ideas[state.dominantIdea]?.text ?? "Unknown";
     const childId = currentTimeline + 1;
 
+    // Save final state of the forked timeline to history
+    setHistory(prev => ({ ...prev, [currentTimeline]: { ...state } }));
+
     addLog(`⚡ FORK TRIGGERED! "${dominantIdea}" reached gravity threshold`);
     addLog(`Timeline ${currentTimeline} → Timeline ${childId} created on-chain`);
 
@@ -145,13 +150,13 @@ export default function Home() {
     });
 
     setCurrentTimeline(childId);
+    setViewingTimeline(childId);
     setPhase("forked");
 
     // Auto-restart on child timeline after 5s
     setTimeout(() => {
       addLog(`Restarting simulation on child timeline ${childId}...`);
       setPhase("running");
-      setSimState((prev) => prev ? { ...prev, timelineId: childId, parentId: currentTimeline, tick: 0, forkTriggered: false } : prev);
       runTickLoop();
     }, 5000);
   }, [currentTimeline]);
@@ -161,7 +166,10 @@ export default function Home() {
     if (simState?.forkTriggered && phase === "running") {
       handleFork(simState);
     }
-  }, [simState?.forkTriggered]);
+  }, [simState?.forkTriggered, phase, handleFork]);
+
+  const isViewingHistory = viewingTimeline !== currentTimeline;
+  const activeSimState = isViewingHistory ? history[viewingTimeline] : simState;
 
   return (
     <main className="h-screen flex flex-col bg-[#020617] overflow-hidden text-slate-200">
@@ -181,7 +189,11 @@ export default function Home() {
           </p>
         </div>
         <div className="flex items-center gap-6">
-          <StatusBar phase={phase} timeline={currentTimeline} tick={simState?.tick ?? 0} />
+          <StatusBar 
+            phase={isViewingHistory ? "idle" : phase} 
+            timeline={viewingTimeline} 
+            tick={activeSimState?.tick ?? 0} 
+          />
           <div className="h-8 w-px bg-white/10" />
           <WalletMultiButton />
         </div>
@@ -199,8 +211,11 @@ export default function Home() {
           <div className="flex-1 overflow-auto p-3">
             <TimelineTree
               nodes={timelineTree}
-              activeId={currentTimeline}
-              onSelect={(id) => addLog(`Viewing timeline ${id}`)}
+              activeId={viewingTimeline}
+              onSelect={(id) => {
+                setViewingTimeline(id);
+                addLog(`Viewing ${id === currentTimeline ? "LIVE" : "ARCHIVED"} timeline: ${id}`);
+              }}
             />
           </div>
         </div>
@@ -211,7 +226,7 @@ export default function Home() {
             <div className="absolute inset-0 bg-white/10 z-50 pointer-events-none animate-reality-glitch will-change-transform" />
           )}
           <NodeGraph
-            state={simState}
+            state={activeSimState}
             phase={phase}
           />
           {phase === "idle" && (
@@ -258,13 +273,20 @@ export default function Home() {
               </button>
             </div>
           )}
+          {isViewingHistory && (
+            <div className="absolute top-20 right-6 animate-pulse">
+              <div className="bg-red-500/20 border border-red-500/50 text-red-400 px-3 py-1 rounded text-[10px] font-bold uppercase tracking-widest">
+                ● Archive View (Frozen)
+              </div>
+            </div>
+          )}
         </div>
 
         {/* Right: Idea Panel + Log */}
         <div className="w-72 border-l border-gray-800 bg-gray-900 flex flex-col">
           <IdeaPanel
-            ideas={simState?.ideas ?? []}
-            phase={phase}
+            ideas={activeSimState?.ideas ?? []}
+            phase={isViewingHistory ? "idle" : phase}
             onInject={handleInjectIdea}
           />
           {/* Log */}
